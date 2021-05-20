@@ -1,0 +1,41 @@
+#!/bin/env bash
+JQ=$(which jq)
+function function_1() {
+  if [ "$1" != "" ]; then
+    pew="$1"
+   >&2 echo "Checking Resource for :: $1"
+    QUERY="["\"~\"","\"title\"", \""$pew"\"]"
+    echo $QUERY > temp
+    curl -X GET  'http://pewpewpewpewpewplmaoowo:8080/pdb/query/v4/resources/Icinga2::Object::Host' --data-urlencode query@temp 
+    rm temp
+  else
+   >&2 echo "Error: Server name missing"
+    help
+  fi
+}
+function function_2() {
+  pew="$1"
+  echo "Checking Resource for :: $pew"
+  QUERY="{\"command\":\"deactivate node\",\"version\":3,\"payload\": { \"certname\": "\"$pew\"" } }"
+  echo $QUERY > temp
+  curl -H "Accept: application/json" -H "Content-Type: application/json" -d @temp http://pewpewpewpepwpewpewpllmao:8080/pdb/cmd/v1 -v
+  rm temp
+  check_exported_resources $pew
+}
+function help() {
+   echo "usage: $0 [[-c | --check <server> ] || [-r | --remove <server>] || [-h | --help ]]"
+}
+opt="$1"
+case $opt 
+  in
+  -c | --check ) check_exported_resources "$2" ;;
+  -r | --remove ) remove_box_puppet "$2" ;;
+  -h | --help ) help
+                exit ;;
+            * ) help
+                exit 1
+esac
+printf "\n"
+>&2 echo "[Script powered using pewpew powers!]"
+exit
+
