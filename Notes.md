@@ -8,6 +8,8 @@
 * colors!
 * Customize the prompt
 * 
+* list
+* 
 
 mpc listall -> a simple db file.
 using fzf to search through it

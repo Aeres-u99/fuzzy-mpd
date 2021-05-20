@@ -12,49 +12,76 @@ bold="\e[1m"
 uline="\e[4m"
 reset="\e[0m"
 
+#GLOBALS
 DBFILE=~/.musicdb
 HOST="127.0.0.1"
 PORT="6600"
-fPROMPT="mpfzf >>"
-
+# Todo:
+# Implement custom prompt from here
+# fPROMPT="mpfzf >>"
 
 # Dependency Check
 if [ "$(command -v rlwrap)" ]; then
     if [ "$(command -v mpc)" ]; then
         if [ "$(command -v fzf)" ]; then
-            >&2 echo -e "${green}Dependency Check was Successfull${reset}"
+            >&2 echo -e "${green}Dependency Check was Successful${reset}"
         else
             >&2 echo -e "${red}fzf${reset} not found"
+            exit 1
         fi
     else
         >&2 echo -e "${red}mpc${reset} not found"
+        exit 1
     fi
 else
     >&2 echo -e "${red}rlwrap${reset} not found"
+    exit 1
 fi
 
+# Trap Ctrl+C to reset terminal
+# To avoid it from getting messed up because of rlwrap
+trap "reset; echo \"Bye!\";exit" INT
 function __create_db() {
-    mpc listall > ~/.musicdb
+    mpc listall > $DBFILE
+}
+
+function __list() {
+    mpc list | grep -n ".*"
+}
+
+function __quit() {
+    reset
+    echo -e "${green} Bye! ${reset}"
+    exit
 }
 
 function __add() {
     echo ""
     __create_db
-
+    mpc add "$(cat $DBFILE | fzf --reverse --prompt "mpfzf :: add >>" --height 40%)"
 }
 
 function __play() {
-    mpc play $(mpc playlist | grep -n ".*" | sed "s/:/ /g" |fzf --reverse --prompt "mpfzf >"| cut -d " " -f 1)
+    mpc play $(mpc playlist | grep -n ".*" | sed "s/:/ /g" |fzf --reverse --prompt "mpfzf :: play >>"| cut -d " " -f 1)
     sleep 1
 }
 
 function __remove() {
-   >&2 echo -e "Press ${red}<CTRL+C>${reset} to exit."
-   PLAY=$(cat $DBFILE | fzf --height 40% --prompt "$PROMPT" --reverse)
-   echo $PLAY
-   sleep 5
+    mpc del $(mpc playlist | grep -n ".*" | sed "s/:/ /g" |fzf --reverse --prompt "mpfzf :: remove >>"| cut -d " " -f 1)
+   
 }
-
+function __next() {
+    mpc next
+}
+function __previous() {
+    mpc prev
+}
+function __resume() {
+    mpc  play
+}
+function __pause() {
+    mpc pause
+}
 
 function __interactive() {
 >&2 echo -e "Press ${red}<CTRL+C>${reset} to exit."
@@ -65,11 +92,16 @@ while :
         #echo $SELECTION
     case $SELECTION
         in
-            a | add     )   __add ;;
-            p | play    )   __play ;;
-            r | remove  )   __remove  ;;
-            u | pause   )   __pause ;;
-                      * )   __mhelp
+            a   | add      )   __add ;;
+            ">" | next     )   __next ;;
+            "<" | previous )   __previous ;;
+            r   | resume   )   __resume ;;
+            p   | play     )   __play ;;
+            x   | remove   )   __remove  ;;
+            u   | pause    )   __pause ;;
+            l   | list     )   __list ;;
+            q   | quit     )   __quit ;;
+                      *  )   __mhelp
     esac
 done
 }
@@ -77,9 +109,14 @@ done
 function __mhelp() {
     echo ""
     echo "a | add       -- Add Music to playlist from Folder"
+    echo "> | next      -- Play the next Song in Queue"
+    echo "< | previous  -- Play the previous Song in Queue"
+    echo "r | resume    -- Resume the song"
     echo "p | play      -- Play a song from Playlist"
-    echo "r | remove    -- Remove a song from queeu"
+    echo "x | remove    -- Remove a song from queeu"
     echo "u | pause     -- Pause Music"
+    echo "l | list      -- List Songs in Current Queue"
+    echo "q | quit      -- Quit"
     echo ""
 }
 
