@@ -7,7 +7,7 @@
    
 ### Screen Recording
 
-![Sample Screen Recording](./SampleScreenRecording.mp4)
+![Sample Screen Recording](https://github.com/Aeres-u99/fuzzy-mpd/raw/main/SampleScreenRecording.mp4)
    
    
 ### Installation
