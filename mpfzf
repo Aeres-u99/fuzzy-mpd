@@ -46,7 +46,7 @@ function __create_db() {
 }
 
 function __list() {
-    mpc list | grep -n ".*"
+    mpc playlist | grep -n ".*" | less -R
 }
 
 function __quit() {
@@ -56,19 +56,18 @@ function __quit() {
 }
 
 function __add() {
-    echo ""
     __create_db
-    mpc add "$(cat $DBFILE | fzf --reverse --prompt "mpfzf :: add >>" --height 40%)"
+    mpc add "$(cat $DBFILE | fzf --reverse --prompt "mpfzf :: add >> " --height 40%)"
 }
 
 function __play() {
-    mpc play $(mpc playlist | grep -n ".*" | sed "s/:/ /g" |fzf --reverse --prompt "mpfzf :: play >>"| cut -d " " -f 1)
+    mpc play $(mpc playlist | grep -n ".*" | sed "s/:/ /g" |fzf --height 40% --reverse --prompt "mpfzf :: play >> "| cut -d " " -f 1)
     sleep 1
 }
 
 function __remove() {
-    mpc del $(mpc playlist | grep -n ".*" | sed "s/:/ /g" |fzf --reverse --prompt "mpfzf :: remove >>"| cut -d " " -f 1)
-   
+    mpc del $(mpc playlist | grep -n ".*" | sed "s/:/ /g" |fzf --height 40% --reverse --prompt "mpfzf :: remove >> "| cut -d " " -f 1)
+    sleep 1
 }
 function __next() {
     mpc next
@@ -88,7 +87,7 @@ function __interactive() {
 while :
     do
         #rlwrap sh -c "echo -e -n \"${green}Action${reset}>> \" "
-        SELECTION=$(rlwrap -pGreen -S 'Action >> ' -H '.mpd.hist' -o cat)
+        SELECTION=$(rlwrap -pGreen -S 'Action :: mpc >> ' -H '.mpd.hist' -o cat)
         #echo $SELECTION
     case $SELECTION
         in

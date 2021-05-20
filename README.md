@@ -5,6 +5,11 @@
 2. fzf : For fuzzy finding
 3. mpc+mpd+ncmpcpp : mpd is the server, and mpc is the client 
    
+### Screen Recording
+
+![Sample Screen Recording](./SampleScreenRecording.mp4)
+   
+   
 ### Installation
 * Install the dependencies
 * Move the script somewhere in path
