@@ -112,7 +112,7 @@ function __mhelp() {
     echo "< | previous  -- Play the previous Song in Queue"
     echo "r | resume    -- Resume the song"
     echo "p | play      -- Play a song from Playlist"
-    echo "x | remove    -- Remove a song from queeu"
+    echo "x | remove    -- Remove a song from queue"
     echo "u | pause     -- Pause Music"
     echo "l | list      -- List Songs in Current Queue"
     echo "q | quit      -- Quit"
